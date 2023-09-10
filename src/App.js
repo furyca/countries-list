@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import Header from "./components/Header";
+import CountryList from "./components/CountryList";
+import { GET_COUNTRIES } from "./queries";
+import { useQuery } from "@apollo/client";
+import Palette from "./components/Palette";
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+    background: {
+      default: '#051025',
+    },
+  }
+});
 
 function App() {
+  const { loading, error, data } = useQuery(GET_COUNTRIES);
+
+  if (loading) return
+  else if(error) return
+
+  const {countries} = data
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header countryList={countries} />
+      <Palette />
+      <CountryList countryList={countries} />
+    </ThemeProvider>
   );
 }
 
