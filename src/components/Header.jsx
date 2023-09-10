@@ -8,7 +8,7 @@ const style = {
   backgroundSize: 'cover',
   backgroundColor: '#0000009e',
   backgroundBlendMode: 'darken',
-  boxShadow: 'inset 0 -5rem 5rem black',
+  boxShadow: 'inset 0 -2rem 5rem #051025',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center'
