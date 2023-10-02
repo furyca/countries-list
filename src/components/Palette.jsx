@@ -41,7 +41,7 @@ const Palette = () => {
   return (
     <>
       <Box my="2rem" textAlign="center">
-        <FormLabel>Color Palette For Selected</FormLabel>
+        <FormLabel>Color Palette For The Selected</FormLabel>
         <RadioGroup
           value={context.selectedColor}
           onChange={handleChange}
