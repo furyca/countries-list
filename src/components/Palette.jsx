@@ -1,10 +1,4 @@
-import {
-  Box,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
+import { Box, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
 import { useContext } from "react";
 import { Context } from "../Context";
 
@@ -26,10 +20,10 @@ const style = {
   display: "flex",
   flexDirection: "row",
   justifyContent: "center",
-  '.css-jzcd7z-MuiFormControlLabel-root': {
-    margin: 0
-  }
-}
+  ".css-jzcd7z-MuiFormControlLabel-root": {
+    margin: 0,
+  },
+};
 
 const Palette = () => {
   const context = useContext(Context);
@@ -42,24 +36,19 @@ const Palette = () => {
     <>
       <Box my="2rem" textAlign="center">
         <FormLabel>Color Palette For The Selected</FormLabel>
-        <RadioGroup
-          value={context.selectedColor}
-          onChange={handleChange}
-          sx={style}
-        >
+        <RadioGroup value={context.selectedColor} onChange={handleChange} sx={style}>
           {palette.map((color) => (
             <FormControlLabel
               key={color}
               value={color}
               control={
                 <Radio
-                  size="large"
+                  size="medium"
                   sx={{
-                    color: color,
+                    color,
                     "&.Mui-checked": {
-                      color: color,
+                      color,
                     },
-                    
                   }}
                 />
               }

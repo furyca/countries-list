@@ -1,110 +1,85 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useContext } from "react";
 import { Context } from "../Context";
 import AlertBar from "./AlertBar";
+import { processInput } from "../helpers/processInput";
+import { groupCountries } from "../helpers/groupCountries";
 
-const container_style = {
-  width: "90%",
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-}
+const styles = {
+  container: {
+    width: "90%",
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  textfield: {
+    width: { xs: "90%", md: "60%", lg: "50%" },
+    bgcolor: "#00000099",
+    borderRadius: "8px",
+  },
+  searchButton: { bgcolor: "#113476", color: "whitesmoke" }
+};
 
-const textfield_style = { width: {xs: "90%", md: '60%', lg: '50%'}, bgcolor: "#00000099", borderRadius: "12px" }
+const validGroupings = ['continent', 'language']
+
+//Depending of the grouping, give margin-top to top element of each group
 
 const Search = ({ countryList }) => {
-  const context = useContext(Context);
+  const { searchInput, setAlert, setSearchInput, setFilteredResults } = useContext(Context);
 
+  //Process the input, filter, optionally group the results and finally set the relevant state or notify
   const handleSearch = (e) => {
     e.preventDefault();
-    const searchInput = context.searchInput;
 
-    const trimColons = searchInput
-      .replace(/: */g, ":")
-      .replace(/search */g, "search")
-      .replace(/group */g, "group");
+    const [searchValue, groupValue] = processInput(searchInput)
 
-    //colon use
-    if (trimColons.includes("search:")) {
-      const arr = trimColons.split(" ");
-      const searchValue = arr[0].split(":")[1];
-      const groupValue = arr[1]?.split(":")[1];
-
-      const filteredCountries = countryList.filter((country) =>
-        country.name.toLowerCase().includes(searchValue.toLowerCase())
-      );
-
-      if (groupValue === "continent") {
-        filteredCountries.sort((a, b) =>
-          a.continent.name > b.continent.name
-            ? 1
-            : a.continent.name < b.continent.name
-            ? -1
-            : 0
-        );
-      } else if (groupValue === "language") {
-        filteredCountries.sort((a, b) =>
-          a.languages[0]?.name > b.languages[0]?.name
-            ? 1
-            : a.languages[0]?.name < b.languages[0]?.name
-            ? -1
-            : 0
-        );
-      }
-
-      context.setFilteredResults(filteredCountries);
-
-      filteredCountries.length < 1 && context.setAlert(true);
+    //filter
+    const filteredCountries = countryList.filter(country =>
+      country.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    
+    if (filteredCountries.length < 1) {
+      return setAlert(true);
     }
-    //keyword search
-    else {
-      const words = context.searchInput.split(" ");
 
-      let results = [];
+    validGroupings.includes(groupValue.toLowerCase()) && groupCountries(groupValue, filteredCountries)
 
-      for (let i = 0; i < words.length; i++) {
-        for (let j = 0; j < countryList.length; j++) {
-          if (
-            countryList[j].name
-              .toLowerCase()
-              .includes(words[i].toLowerCase()) &&
-            !results.includes(countryList[j])
-          ) {
-            results.push(countryList[j]);
-          }
-        }
-      }
-      results.length < 1 && context.setAlert(true);
-      context.setFilteredResults(results);
+    setFilteredResults(filteredCountries);
+  };
+
+  //Force the input to include search: and group:
+  const handleInput = (e) => {
+    const pattern = /^search:[\s\S]*?(?=\s+group:)|^search:[a-zA-Z]+(?:\s+[a-zA-Z]+)? group:[a-zA-Z]+$/i;
+
+    if (pattern.test(e.target.value)) {
+      setSearchInput(e.target.value);
     }
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSearch}
-      sx={container_style}
-    >
+    <Box component="form" onSubmit={handleSearch} sx={styles.container}>
       <TextField
         variant="outlined"
         label="Search"
-        sx={textfield_style}
+        value={searchInput}
+        placeholder="to search&group use the 'search: group: ' syntax"
+        sx={styles.textfield}
         InputProps={{
           sx: {
             borderRadius: "12px",
           },
         }}
         margin="normal"
-        onChange={(e) => context.setSearchInput(e.target.value)}
+        onChange={handleInput}
       />
-      <Box sx={{bgcolor: "#00000099", padding: '1rem', marginBottom: '1rem', borderRadius: '12px'}}>
-        <Typography  sx={{ textShadow: "2px 0 3px black" }}>
-          To filter&group use the following syntax: 'search: value group: value'
-        </Typography>
-      </Box>
-      
-      <Button variant="contained" size="large" sx={{bgcolor: '#113476', color: 'whitesmoke'}} onClick={(e) => handleSearch(e)}>
+
+      <Button
+        variant="contained"
+        size="large"
+        sx={styles.searchButton}
+        onClick={(e) => handleSearch(e)}
+      >
         Search
       </Button>
       <AlertBar />

@@ -61,37 +61,29 @@ export const all_columns = {
 };
 
 const CountryList = ({ countryList }) => {
-  const context = useContext(Context);
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up("md"));
+  const { filteredResults, selectedColor } = useContext(Context);
   const [rowSelectionModel, setRowSelectionModel] = useState(countryList[9].code);
-  const [columnVisible, setColumnVisible] = useState(all_columns);
-
-  useEffect(() => {
-    const newColumns = matches ? all_columns : mobile_columns;
-    setColumnVisible(newColumns);
-  }, [matches]);
-
+  const { breakpoints } = useTheme();
+  const matches = useMediaQuery(breakpoints.up("md"));
+  const columnVisible = matches ? all_columns : mobile_columns;
 
   useEffect(() => {
     setRowSelectionModel(
-      context.filteredResults.length < 10 && context.filteredResults.length > 0
-        ? context.filteredResults[context.filteredResults.length - 1].code
+      filteredResults.length > 0
+        ? filteredResults.length > 9
+          ? filteredResults[9].code
+          : filteredResults[filteredResults.length - 1]?.code
         : countryList[9].code
     );
-  }, [context.filteredResults, countryList]);
+  }, [filteredResults, countryList]);
 
   return (
     <DataGrid
-      rows={
-        context.filteredResults.length > 0
-          ? context.filteredResults
-          : countryList
-      }
+      rows={filteredResults.length > 0 ? filteredResults : countryList}
       getRowId={(row) => row.code}
       columns={columns}
       rowSelectionModel={rowSelectionModel}
-      onRowSelectionModelChange={(row) => setRowSelectionModel(row)}
+      onRowSelectionModelChange={(row) => setRowSelectionModel(row[0] === rowSelectionModel ? "" : row[0])}
       columnVisibilityModel={columnVisible}
       disableColumnMenu
       GridColDef={false}
@@ -111,7 +103,7 @@ const CountryList = ({ countryList }) => {
           cursor: "pointer",
         },
         ".MuiDataGrid-row.Mui-selected": {
-          bgcolor: context.selectedColor,
+          bgcolor: selectedColor,
         },
 
         "& .MuiDataGrid-cell:focus, .MuiDataGrid-columnHeader:focus ": {
