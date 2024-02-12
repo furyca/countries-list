@@ -15,14 +15,17 @@ const palette = [
   "#3C486B",
 ];
 
-const style = {
-  my: "1rem",
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  ".css-jzcd7z-MuiFormControlLabel-root": {
-    margin: 0,
-  },
+const styles = {
+  palette: {
+    my: "1rem",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    ".css-jzcd7z-MuiFormControlLabel-root": {
+      margin: 0,
+    },
+
+  }
 };
 
 const Palette = () => {
@@ -36,7 +39,7 @@ const Palette = () => {
     <>
       <Box my="2rem" textAlign="center">
         <FormLabel>Color Palette For The Selected</FormLabel>
-        <RadioGroup value={context.selectedColor} onChange={handleChange} sx={style}>
+        <RadioGroup value={context.selectedColor} onChange={handleChange} sx={styles.palette}>
           {palette.map((color) => (
             <FormControlLabel
               key={color}

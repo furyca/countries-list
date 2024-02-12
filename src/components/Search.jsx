@@ -1,9 +1,10 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, IconButton, TextField, Tooltip } from "@mui/material";
 import { useContext } from "react";
 import { Context } from "../Context";
 import AlertBar from "./AlertBar";
 import { processInput } from "../helpers/processInput";
 import { groupCountries } from "../helpers/groupCountries";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const styles = {
   container: {
@@ -18,32 +19,31 @@ const styles = {
     bgcolor: "#00000099",
     borderRadius: "8px",
   },
-  searchButton: { bgcolor: "#113476", color: "whitesmoke" }
+  searchButton: { bgcolor: "#113476", color: "whitesmoke" },
+  infoTooltip: { color: "#508dff"},
 };
 
-const validGroupings = ['continent', 'language']
+const validGroupings = ["continent", "language"];
 
-//Depending of the grouping, give margin-top to top element of each group
-
-const Search = ({ countryList }) => {
-  const { searchInput, setAlert, setSearchInput, setFilteredResults } = useContext(Context);
+const Search = () => {
+  const { searchInput, setAlert, setSearchInput, setFilteredResults, countryList } = useContext(Context);
 
   //Process the input, filter, optionally group the results and finally set the relevant state or notify
   const handleSearch = (e) => {
     e.preventDefault();
 
-    const [searchValue, groupValue] = processInput(searchInput)
+    const [searchValue, groupValue] = processInput(searchInput);
 
     //filter
-    const filteredCountries = countryList.filter(country =>
+    const filteredCountries = countryList.filter((country) =>
       country.name.toLowerCase().includes(searchValue.toLowerCase())
     );
-    
+
     if (filteredCountries.length < 1) {
       return setAlert(true);
     }
 
-    validGroupings.includes(groupValue.toLowerCase()) && groupCountries(groupValue, filteredCountries)
+    validGroupings.includes(groupValue.toLowerCase()) && groupCountries(groupValue, filteredCountries);
 
     setFilteredResults(filteredCountries);
   };
@@ -67,21 +67,24 @@ const Search = ({ countryList }) => {
         sx={styles.textfield}
         InputProps={{
           sx: {
-            borderRadius: "12px",
+            borderRadius: "8px",
           },
         }}
         margin="normal"
         onChange={handleInput}
       />
+      <Box display="flex" gap={2}>
+        <Button variant="contained" size="large" sx={styles.searchButton} onClick={(e) => handleSearch(e)}>
+          Search
+        </Button>
 
-      <Button
-        variant="contained"
-        size="large"
-        sx={styles.searchButton}
-        onClick={(e) => handleSearch(e)}
-      >
-        Search
-      </Button>
+        <Tooltip title="Currently available groupings are 'language' and 'continent'" arrow>
+          <IconButton sx={styles.infoTooltip}>
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       <AlertBar />
     </Box>
   );

@@ -2,88 +2,76 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../Context";
 import { useTheme } from "@emotion/react";
-import { useMediaQuery } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
+import { GET_COUNTRIES } from "../queries";
+import { useQuery } from "@apollo/client";
+import { all_columns, columns, mobile_columns } from "../MUITableColumns";
 
-const getLanguages = (params) => {
-  const languages = params.row.languages.map((language) => ` ${language.name}`);
-  return `${languages || ""}`;
+const styles = {
+  list: {
+    width: { xs: "95%", md: "80%" },
+    margin: "2rem auto",
+    border: "none",
+    userSelect: "none",
+
+    
+  },
 };
 
-const columns = [
-  {
-    field: "emoji",
-    headerName: "Flag",
-    flex: 1,
-    sortable: false,
-    renderCell: (params) => {
-      const fontSize = "2rem";
-      return <div style={{ fontSize }}>{params.value}</div>;
-    },
-  },
-  { field: "name", headerName: "Name", flex: 2, sortable: false },
-  { field: "native", headerName: "Native Name", flex: 2, sortable: false },
-  {
-    field: "languages",
-    headerName: "Languages",
-    flex: 4,
-    valueGetter: getLanguages,
-    headerAlign: "center",
-    sortable: false,
-    align: "center",
-  },
-  { field: "capital", headerName: "Capital", flex: 2, sortable: false },
-  {
-    field: "continent",
-    headerName: "Continent",
-    flex: 2,
-    sortable: false,
-    valueGetter: (params) => {
-      return params.row.continent.name;
-    },
-  },
-];
-
-export const mobile_columns = {
-  emoji: false,
-  name: true,
-  native: false,
-  languages: true,
-  capital: false,
-  continent: true,
-};
-export const all_columns = {
-  emoji: true,
-  name: true,
-  native: true,
-  languages: true,
-  capital: true,
-  continent: true,
-};
-
-const CountryList = ({ countryList }) => {
-  const { filteredResults, selectedColor } = useContext(Context);
-  const [rowSelectionModel, setRowSelectionModel] = useState(countryList[9].code);
+const CountryList = () => {
+  const { loading, error, data } = useQuery(GET_COUNTRIES);
+  const { filteredResults, selectedColor, countryList, setCountryList } = useContext(Context);
+  const [rowSelectionModel, setRowSelectionModel] = useState("");
   const { breakpoints } = useTheme();
   const matches = useMediaQuery(breakpoints.up("md"));
   const columnVisible = matches ? all_columns : mobile_columns;
 
   useEffect(() => {
-    setRowSelectionModel(
-      filteredResults.length > 0
-        ? filteredResults.length > 9
-          ? filteredResults[9].code
-          : filteredResults[filteredResults.length - 1]?.code
-        : countryList[9].code
-    );
+    data && setCountryList(data.countries);
+    // eslint-disable-next-line
+  }, [data]);
+
+  useEffect(() => {
+    const sanitizeList = () => {
+      if (countryList.length > 0) {
+        if (filteredResults.length > 0) {
+          let sanitizedList = [...filteredResults];
+          sanitizedList = sanitizedList.filter((item) => item.code.length < 3);
+
+          return sanitizedList.length > 9 ? sanitizedList[9].code : sanitizedList[sanitizedList.length - 1]?.code;
+        } else {
+          return countryList[9].code;
+        }
+      }
+    };
+    setRowSelectionModel(sanitizeList());
   }, [filteredResults, countryList]);
+
+  if (loading) return <Typography textAlign={"center"}>Loading...</Typography>;
+  else if (error) return <Typography textAlign={"center"}>Couldn't get the data!</Typography>;
+
+  const getRowClassName = ({ id }) => {
+    if (id.length > 2) {
+      return "groupHeader";
+    }
+  };
 
   return (
     <DataGrid
       rows={filteredResults.length > 0 ? filteredResults : countryList}
       getRowId={(row) => row.code}
+      getRowClassName={getRowClassName}
+      getCellClassName={(params) => {
+        if (params.id.length > 2) {
+          return "no-border";
+        }
+      }}
+      isRowSelectable={(params) => params.id.length < 3}
       columns={columns}
       rowSelectionModel={rowSelectionModel}
-      onRowSelectionModelChange={(row) => setRowSelectionModel(row[0] === rowSelectionModel ? "" : row[0])}
+      onRowSelectionModelChange={(row) =>
+        countryList.length > 0 && setRowSelectionModel(row[0] === rowSelectionModel ? "" : row[0])
+      }
       columnVisibilityModel={columnVisible}
       disableColumnMenu
       GridColDef={false}
@@ -94,21 +82,55 @@ const CountryList = ({ countryList }) => {
       }}
       pageSizeOptions={[15, 30, 50, 75, 100]}
       sx={{
-        width: "90%",
-        margin: "2rem auto",
-        border: "none",
-        userSelect: "none",
-
+        ...styles.list,
         ".MuiDataGrid-row": {
           cursor: "pointer",
+          ":hover": {
+            backgroundColor: "transparent",
+          },
         },
         ".MuiDataGrid-row.Mui-selected": {
           bgcolor: selectedColor,
         },
-
-        "& .MuiDataGrid-cell:focus, .MuiDataGrid-columnHeader:focus ": {
+        "& .MuiDataGrid-cell:focus, .MuiDataGrid-columnHeader:focus": {
           outline: "none",
         },
+        ".groupHeader": {
+          my: "2rem",
+        },
+        ".no-border": {
+          border: "none",
+          overflow: "unset !important",
+
+          ":hover": {
+            bgcolor: "unset",
+          },
+        },
+        ".MuiDataGrid-row.no-border": {
+          overflow: "unset",
+        },
+        ".css-axafay-MuiDataGrid-virtualScroller": {
+          overflowX: "hidden",
+        },
+        ".MuiDataGrid-virtualScroller": {
+          "::-webkit-scrollbar": {
+            width: 5,
+          },
+          "::-webkit-scrollbar-track": {
+            borderRadius: 10,
+          },
+          "::-webkit-scrollbar-thumb": {
+            background: "#2f2f2f",
+            borderRadius: 10,
+          },
+          "::-webkit-scrollbar-thumb:hover": {
+            background: "black",
+          },
+          
+        },
+        ".MuiDataGrid-selectedRowCount": {
+          visibility: 'hidden'
+        }
       }}
     />
   );
