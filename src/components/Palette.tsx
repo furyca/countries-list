@@ -1,8 +1,9 @@
 import { Box, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
-import { useContext } from "react";
+import { ChangeEvent, useContext } from "react";
 import { Context } from "../Context";
+import { Styles } from "../types/styleTypes";
 
-const palette = [
+const palette: string[] = [
   "#0D1282",
   "#F0DE36",
   "#D71313",
@@ -15,35 +16,36 @@ const palette = [
   "#3C486B",
 ];
 
-const styles = {
+const styles: Styles = {
   palette: {
-    my: "1rem",
+    marginTop: "1rem",
+    marginBottom: "1rem",
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    ".css-jzcd7z-MuiFormControlLabel-root": {
-      margin: 0,
-    },
-
-  }
+  },
+  ".css-jzcd7z-MuiFormControlLabel-root": {
+    margin: 0,
+  },
 };
 
 const Palette = () => {
-  const context = useContext(Context);
+  const { selectedColor, setSelectedColor } = useContext(Context);
 
-  const handleChange = (e) => {
-    context.setSelectedColor(e.target.value);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSelectedColor(e.target.value);
   };
 
   return (
     <>
       <Box my="2rem" textAlign="center">
         <FormLabel>Color Palette For The Selected</FormLabel>
-        <RadioGroup value={context.selectedColor} onChange={handleChange} sx={styles.palette}>
+        <RadioGroup value={selectedColor} onChange={handleChange} sx={styles.palette}>
           {palette.map((color) => (
             <FormControlLabel
               key={color}
               value={color}
+              label=""
               control={
                 <Radio
                   size="medium"

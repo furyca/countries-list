@@ -1,7 +1,8 @@
+/*
+  Clip possibly unnecessary elements, adjust array for multi word queries and extract user input
+*/
 
-
-//Clip possibly unnecessary elements, adjust array for multi word queries and extract user input
-export const processInput = (searchInput) => {
+export const processInput = (searchInput: string) => {
     const results_array = searchInput.replace(/: */g, ":").replace(/ *group*/g, " group").trim().split(" ");
     let clipped_results = [];
 

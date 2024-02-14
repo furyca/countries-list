@@ -1,11 +1,11 @@
 import Search from "./Search";
 import { Box } from "@mui/material";
-import image from './assets/header-background.jpg'
+import { Styles } from "../types/styleTypes";
 
-const styles = {
+const styles: Styles = {
   header: {
     height: 400,
-    background: `url(${image}) top no-repeat`,
+    background: `url(/assets/header-background.jpg) top no-repeat`,
     backgroundSize: 'cover',
     backgroundColor: '#0000009e',
     backgroundBlendMode: 'darken',
@@ -15,10 +15,10 @@ const styles = {
   }
 }
 
-const Header = ({countryList}) => {
+const Header = () => {
   return (
     <Box component='header' sx={styles.header}>
-      <Search countryList={countryList} />
+      <Search />
     </Box>
   );
 };

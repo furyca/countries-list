@@ -1,8 +1,9 @@
 import { Button } from "@mui/material";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import ChangeHistoryRoundedIcon from "@mui/icons-material/ChangeHistoryRounded";
+import { Styles } from "../types/styleTypes";
 
-const styles = {
+const styles: Styles = {
   button: {
     display: "none",
     position: "fixed",
@@ -21,12 +22,14 @@ const styles = {
 };
 
 const TopButton = () => {
-  const topButton = useRef();
+  const topButton = useRef<HTMLButtonElement>(null);
 
   const scroll = () => {
-    document.documentElement.scrollTop > 250
-      ? (topButton.current.style.display = "block")
-      : (topButton.current.style.display = "none");
+    if (topButton.current) {
+      document.documentElement.scrollTop > 250
+        ? (topButton.current.style.display = "block")
+        : (topButton.current.style.display = "none");
+    }
   };
 
   const toTop = () => (document.documentElement.scrollTop = 0);

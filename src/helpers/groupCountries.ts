@@ -1,19 +1,21 @@
 import { nanoid } from "nanoid";
+import { CountryProps } from "../types/dataTypes";
 
 /*
   Further processing of the row data became a necessity due to grouping rows being a premium feature of Material UI
 */
 
-const mimicRow = {
+const mimicRow: CountryProps = {
   capital: "",
-  continent: {},
+  code: "",
+  continent: {name: ""},
   emoji: "",
   languages: [],
   name: "",
   native: "",
 };
 
-export const groupCountries = (groupValue, filteredCountries) => {
+export const groupCountries = (groupValue: string, filteredCountries: CountryProps[]) => {
   if (groupValue === "continent") {
     filteredCountries.sort((a, b) =>
       a.continent.name > b.continent.name ? 1 : a.continent.name < b.continent.name ? -1 : 0

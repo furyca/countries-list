@@ -1,21 +1,25 @@
+import { Box } from "@mui/material";
+import { GridColDef, GridRenderCellParams, GridValueGetterParams } from "@mui/x-data-grid";
+
 /*
   Column settings for Material UI Data Grid component
 */
 
-import { Box } from "@mui/material";
-
-const getLanguages = (params) => {
-  const languages = params.row.languages.map((language) => ` ${language.name}`);
-  return `${languages || ""}`;
+const getLanguages = ({ row: { languages } }: GridValueGetterParams) => {
+  if (!languages || languages.length === 0) {
+    return "";
+  }
+  const languageList = languages.map((language: {name: string}) => ` ${language.name}`);
+  return `${languageList || ""}`;
 };
 
-export const columns = [
+export const columns: GridColDef[] = [
   {
     field: "emoji",
     headerName: "Flag",
     flex: 1,
     sortable: false,
-    renderCell: ({value}) => {
+    renderCell: ({value}: GridRenderCellParams) => {
       return <div style={{ fontSize: "2rem" }}>{value}</div>;
     },
   },
@@ -29,9 +33,9 @@ export const columns = [
     headerAlign: "center",
     sortable: false,
     align: "center",
-    renderCell: (params) => {
-      if (params.id.length > 2) {
-        return <Box sx={{ fontWeight: 'bold', color: 'gray', letterSpacing: {xs: 2, md: 6}}}>{params.value}</Box>;
+    renderCell: ({id, value}: GridRenderCellParams) => {
+      if (id.toString().length > 2) {
+        return <Box sx={{ fontWeight: 'bold', color: 'gray', letterSpacing: {xs: 2, md: 6}}}>{value}</Box>;
       }
     }, 
   },
@@ -41,8 +45,8 @@ export const columns = [
     headerName: "Continent",
     flex: 2,
     sortable: false,
-    valueGetter: (params) => {
-      return params.row.continent.name;
+    valueGetter: ({ row: { continent } }: GridValueGetterParams) => {
+      return continent.name;
     },
   },
 ];

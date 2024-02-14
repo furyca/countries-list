@@ -1,12 +1,13 @@
 import { Box, Button, IconButton, TextField, Tooltip } from "@mui/material";
-import { useContext } from "react";
+import { ChangeEvent, SyntheticEvent, useContext } from "react";
 import { Context } from "../Context";
 import AlertBar from "./AlertBar";
 import { processInput } from "../helpers/processInput";
 import { groupCountries } from "../helpers/groupCountries";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Styles } from "../types/styleTypes";
 
-const styles = {
+const styles: Styles = {
   container: {
     width: "90%",
     textAlign: "center",
@@ -16,10 +17,10 @@ const styles = {
   },
   textfield: {
     width: { xs: "90%", md: "60%", lg: "50%" },
-    bgcolor: "#00000099",
+    backgroundColor: "#00000099",
     borderRadius: "8px",
   },
-  searchButton: { bgcolor: "#113476", color: "whitesmoke" },
+  searchButton: { backgroundColor: "#113476", color: "whitesmoke" },
   infoTooltip: { color: "#508dff"},
 };
 
@@ -29,7 +30,7 @@ const Search = () => {
   const { searchInput, setAlert, setSearchInput, setFilteredResults, countryList } = useContext(Context);
 
   //Process the input, filter, optionally group the results and finally set the relevant state or notify
-  const handleSearch = (e) => {
+  const handleSearch = (e: SyntheticEvent) => {
     e.preventDefault();
 
     const [searchValue, groupValue] = processInput(searchInput);
@@ -49,7 +50,7 @@ const Search = () => {
   };
 
   //Force the input to include search: and group:
-  const handleInput = (e) => {
+  const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const pattern = /^search:[\s\S]*?(?=\s+group:)|^search:[a-zA-Z]+(?:\s+[a-zA-Z]+)? group:[a-zA-Z]+$/i;
 
     if (pattern.test(e.target.value)) {
