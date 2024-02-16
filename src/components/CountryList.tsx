@@ -75,12 +75,12 @@ const CountryList = () => {
           ...styles.list,
           ".MuiDataGrid-row": {
             cursor: "pointer",
-            ":hover": {
-              backgroundColor: "transparent",
-            },
           },
           ".MuiDataGrid-row.Mui-selected": {
             bgcolor: selectedColor,
+            ":hover": {
+              bgcolor: selectedColor,
+            },
           },
           "& .MuiDataGrid-cell:focus, .MuiDataGrid-columnHeader:focus": {
             outline: "none",
