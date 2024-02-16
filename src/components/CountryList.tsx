@@ -9,7 +9,7 @@ import { Styles } from "../types/styleTypes";
 
 const styles: Styles = {
   list: {
-    width: { xs: "95%", md: "80%" },
+    width: { xs: "95%", md: "85%" },
     margin: "2rem auto",
     border: "none",
     userSelect: "none",
@@ -52,7 +52,6 @@ const CountryList = () => {
   else if (error) return <Typography textAlign={"center"}>Couldn't get the data!</Typography>;
 
   return (
-    countryList.length > 0 && (
       <DataGrid
         rows={filteredResults.length > 0 ? filteredResults : countryList}
         getRowId={(row) => row.code}
@@ -124,7 +123,6 @@ const CountryList = () => {
         }}
       />
     )
-  );
 };
 
 export default CountryList;
